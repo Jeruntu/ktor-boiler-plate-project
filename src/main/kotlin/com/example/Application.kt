@@ -1,6 +1,12 @@
 package com.example
 
+import com.example.config.AppConfig
+import com.example.di.appModule
+import com.example.features.user.userRoutes
 import com.example.plugins.configureDatabase
+import com.example.plugins.configureMonitoring
+import com.example.plugins.configureStatusPages
+import com.example.plugins.configureSwagger
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
@@ -21,17 +27,24 @@ fun main(args: Array<String>) {
 
 @Suppress("unused")
 fun Application.module() {
-    configureDatabase(environment.config)
+    val appConfig = AppConfig.from(environment.config)
+    configureDatabase(appConfig.storage)
+    configureMonitoring()
+    configureStatusPages()
+    configureSwagger()
 
     install(ContentNegotiation) {
         json()
     }
 
-    install(Koin)
+    install(Koin) {
+        modules(appModule)
+    }
 
     routing {
         get("/") {
             call.respondText("Hello, World!")
         }
+        userRoutes()
     }
 }

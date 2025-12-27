@@ -11,3 +11,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+
+rootProject.name = "kotlin-backend-project"
